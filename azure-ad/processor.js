@@ -3,12 +3,12 @@ const azureADUtil = require('./util');
 
 const logger = new Logger('azure-ad-processor.js', 'json', process.env.LogLevel);
 
+let openIdConfig = '';
+let certificates = '';
+
 exports.verifyToken = async (jwtString, options, authorizedTenantId) => {
   let isValidToken = false;
   try {
-    let openIdConfig = '';
-    let certificates = '';
-
     // const decodedToken = jsonwebtoken.decode(jwtString);
 
     // Call this method ONLY IF tenant ID is present in JWT
