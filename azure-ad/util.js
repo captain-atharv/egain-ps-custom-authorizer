@@ -101,20 +101,29 @@ const requestSigningCertificates = async (jwtSigningKeysLocation, options) => {
   return response;
 };
 
-const verifyAll = (jwt, key, options) => {
-  let isVerified = false;
-  try {
-    jsonwebtoken.verify(jwt, key, options);
-    logger.log('info', { tags: 'Token authorized successfully' });
-    isVerified = true;
-  } catch (err) {
-    logger.log('error', {
-      tags: 'error while authorizing token',
-      err,
-      errorMessage: err.stack,
-    });
+const verifyAll = (jwt, certificates, options) => {
+  let errorDetails = '';
+  const jwtParams = JSON.parse(JSON.stringify(options));
+  delete jwtParams.audience;
+  delete jwtParams.issuer;
+  for (let i = 0; i < certificates.data.length; i += 1) {
+    logger.log('debug', `Verifying for certificate number -> ${i}`);
+    try {
+      jsonwebtoken.verify(jwt, certificates.data[i], jwtParams);
+      logger.log('info', { tags: 'Token authorized successfully' });
+      return true;
+    } catch (err) {
+      errorDetails = {
+        err,
+        errorMessage: err.stack,
+      };
+    }
   }
-  return isVerified;
+  logger.log('error', {
+    tags: 'error while authorizing token',
+    errorDetails,
+  });
+  return false;
 };
 
 module.exports = {
