@@ -2,6 +2,7 @@ const Logger = require('ps-chronicle');
 const azureADUtil = require('./util');
 
 const logger = new Logger('azure-ad-processor.js', 'json', process.env.LogLevel);
+
 let openIdConfig = '';
 let certificates = '';
 
@@ -34,7 +35,7 @@ exports.verifyToken = async (jwtString, options, authorizedTenantId) => {
       if (certData.isError) {
         return isValidToken;
       }
-      certificates = certData;
+      certificates = certData.data;
     }
 
     isValidToken = azureADUtil.verifyAll(jwtString, certificates, options);

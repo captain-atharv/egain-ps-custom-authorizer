@@ -51,8 +51,9 @@ const authorizeEvent = async (event) => {
     options.algorithms = ['RS256'];
     options.audience = secretVal.audience;
     options.issuer = secretVal.issuer;
+    options.kid = secretVal.kid;
 
-    let {authorization} = lowerCasedHeaders;
+    let { authorization } = lowerCasedHeaders;
     authorization = authorization.replace('Bearer ', '');
     const isValidToken = await azureADHandler.verifyToken(
       authorization,
