@@ -1,4 +1,5 @@
 const Logger = require('ps-chronicle');
+const jsonwebtoken = require('jsonwebtoken');
 const azureADHandler = require('./azure-ad/processor');
 const { convertObjectKeysToLower } = require('./util');
 
@@ -51,10 +52,13 @@ const authorizeEvent = async (event) => {
     options.algorithms = ['RS256'];
     options.audience = secretVal.audience;
     options.issuer = secretVal.issuer;
-    options.kid = secretVal.kid;
 
     let { authorization } = lowerCasedHeaders;
     authorization = authorization.replace('Bearer ', '');
+
+    const decodedToken = jsonwebtoken.decode(authorization, { complete: true });
+    options.kid = decodedToken.header.kid;
+
     const isValidToken = await azureADHandler.verifyToken(
       authorization,
       options,

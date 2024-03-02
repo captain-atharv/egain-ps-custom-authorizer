@@ -67,7 +67,7 @@ const requestSigningCertificates = async (jwtSigningKeysLocation, options) => {
       response.data = getPem(matchedKey.n, matchedKey.e);
       response.isError = false;
     } else {
-      logger.log('error', { tags: 'Public key for certificate not fetched. Please verify kid and issuer added in configuration' });
+      logger.log('error', { tags: 'Public key for certificate not fetched. Either issuer added in configuration or token is invalid' });
     }
   } catch (err) {
     logger.log('error', {
@@ -84,8 +84,6 @@ const requestSigningCertificates = async (jwtSigningKeysLocation, options) => {
 const verifyAll = (jwt, certificate, options) => {
   const errorDetails = '';
   const jwtParams = JSON.parse(JSON.stringify(options));
-  delete jwtParams.audience;
-  delete jwtParams.issuer;
   delete jwtParams.kid;
 
   try {
